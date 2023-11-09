@@ -28,7 +28,7 @@ int main()
 
     // Load the font for displaying the instructions
     sf::Font font;
-    if (!font.loadFromFile("arial.ttf")) 
+    if (!font.loadFromFile("JUICE___.TTF")) 
     {
         cerr << "Font not found boo" << endl;
         return 1;
@@ -102,7 +102,7 @@ int main()
 	    for (int i = 0; i < 100; i++)
 	    {
             	///select random vertex
-		int randomVertex = distribution(generator);
+		int randomVertexIndex = distribution(generator);
             	///calculate midpoint between random vertex and the last point in the vector
 		sf::Vector2f randomVertex = vertices[randomVertexIndex];
 		sf::Vector2f lastPoint = points.back();
