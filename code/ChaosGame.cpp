@@ -17,7 +17,7 @@ int main()
     // Create a video mode object
     VideoMode vm(1920, 1080); // window size
     // Create and open a window for the game
-    RenderWindow window(vm, "Sierpinski Triangle yayy", Style::Default);
+    RenderWindow window(vm, "Sierpinski CaTriangle", Style::Default);
    
     // declares vectors to store corrdinates of the triangle
     vector<Vector2f> vertices;
@@ -26,6 +26,18 @@ int main()
     // Random number generator for vertex selection
     default_random_engine generator;
     uniform_int_distribution<int> distribution(0, 2);
+
+   // Load background texture
+   sf::Texture backgroundTexture;
+   if (!backgroundTexture.loadFromFile("cat.jfif")) 
+   {
+     cerr << "Failed to load background image" << endl;
+     return 1;
+   }
+    // create a SMFL sprite object for the background
+    sf::Sprite background;
+    background.setTexture(backgroundTexture);
+    background.setScale((float)vm.width / backgroundTexture.getSize().x, (float)vm.height / backgroundTexture.getSize().y);
 
     // Load the font for displaying the instructions
     sf::Font font;
@@ -122,7 +134,8 @@ int main()
 	    
         // clear the window to erase what was drawn previously on the screen
         window.clear();
-	    
+	// draw background
+        window.draw(background);   
         /*****************************************
 			  Draw
 	*****************************************/
