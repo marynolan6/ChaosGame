@@ -147,7 +147,7 @@ int main()
             // set to current vertix in vector
             rect.setPosition(Vector2f(vertices[i].x, vertices[i].y));
             // set color
-            rect.setFillColor(sf::Color::White);
+            rect.setFillColor(sf::Color::Red);
             // draw it
             window.draw(rect);
         }
@@ -160,7 +160,7 @@ int main()
             // set object to vector of points
             point.setPosition(points[i]);
             // fill to a certain color
-            point.setFillColor(Color::Cyan);
+            point.setFillColor(Color::White);
             // use RenderWindow object to display
             window.draw(point);
         }
