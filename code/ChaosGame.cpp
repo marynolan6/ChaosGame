@@ -1,5 +1,8 @@
-// Updated one:
-// sf:: prevents name conflicts
+/*11/10/23
+- Fixed background so the picture sizes properly on all interfaces
+- Deleted some of the "sf::" parts where it was not needed since we are using namespace sf
+- Changed lines 162 and 174 from int i to long long int i to get rid of warnings when using the makefile
+*/
 // Include important C++ libraries here
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
@@ -16,8 +19,9 @@ int main()
 {
     // Create a video mode object
     VideoMode vm(1920, 1080); // window size
+
     // Create and open a window for the game
-    RenderWindow window(vm, "Sierpinski CaTriangle", Style::Default);
+    RenderWindow window(vm, "Sierpinski CaT-riangle", Style::Default);
    
     // declares vectors to store corrdinates of the triangle
     vector<Vector2f> vertices;
@@ -27,106 +31,124 @@ int main()
     default_random_engine generator;
     uniform_int_distribution<int> distribution(0, 2);
 
-   // Load background texture
-   sf::Texture backgroundTexture;
-   if (!backgroundTexture.loadFromFile("cat.jfif")) 
-   {
-     cerr << "Failed to load background image" << endl;
-     return 1;
-   }
+    // Load background texture
+    Texture backgroundTexture;
+    if (!backgroundTexture.loadFromFile("cat.jfif")) 
+    {
+      cerr << "Failed to load background image" << endl;
+      return 1;
+    }
+
     // create a SMFL sprite object for the background
-    sf::Sprite background;
+    Sprite background;
     background.setTexture(backgroundTexture);
-    background.setScale((float)vm.width / backgroundTexture.getSize().x, (float)vm.height / backgroundTexture.getSize().y);
+
+    //setting up background so the picture is sized properly
+    float windowSizeX = (float) window.getSize().x;
+    float windowSizeY = (float) window.getSize().y;
+    float bgtSizeX = backgroundTexture.getSize().x;
+    float bgtSizeY = backgroundTexture.getSize().y;
+    background.setScale(windowSizeX / bgtSizeX, windowSizeY / bgtSizeY );
 
     // Load the font for displaying the instructions
-    sf::Font font;
+    Font font;
     if (!font.loadFromFile("JUICE___.TTF")) 
     {
         cerr << "Font not found boo" << endl;
         return 1;
     }
+
     // create text object
-    sf::Text text;
+    Text text;
     // select the font
     text.setFont(font); // font is a sf::Font
     // set the string to display
     text.setString("You want to create a triangle? Yes you do. Now click 3 times on the screen:D");
     // set the character size
-    text.setCharacterSize(24); // in pixels, not points!
+    text.setCharacterSize(36); // in pixels, not points!
     // set the color
-    text.setFillColor(sf::Color::Blue);
+    text.setFillColor(Color::Blue);
     // set the text style
-    text.setStyle(sf::Text::Bold);
+    text.setStyle(Text::Bold);
     // displays actual text
     window.draw(text);
 
+
+
     while (window.isOpen())
     {
+
       /*****************************************
-	     Handle the players input
+	    Handle the players input
       *****************************************/
+
         // handles SFML window
-        sf::Event event;
+        Event event;
+
         // checks for clicks/window closure
         while (window.pollEvent(event))
         {
             // if user closed it
-            if (event.type == sf::Event::Closed)
+            if (event.type == Event::Closed)
             {
                 // Quit the game when the window is closed
                 window.close();
             }
+
             // adding vertices based on mouse click
-            if (event.type == sf::Event::MouseButtonPressed)
+            if (event.type == Event::MouseButtonPressed)
             {
                 // left mouse click
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
-                    std::cout << "the left button was pressed" << std::endl;
-                    std::cout << "mouse x: " << event.mouseButton.x << std::endl;
-                    std::cout << "mouse y: " << event.mouseButton.y << std::endl;
+                    cout << "the left button was pressed" << endl;
+                    cout << "mouse x: " << event.mouseButton.x << endl;
+                    cout << "mouse y: " << event.mouseButton.y << endl;
 
                     // checks number of points clicked
                     if (vertices.size() < 3)
                     {
                         // Assign the coordinates of the mouse click to the vertices vector
-                        vertices.push_back(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
+                        vertices.push_back(Vector2f(event.mouseButton.x, event.mouseButton.y));
                     }
                     else if (points.size() == 0)
                     {
                         ///fourth click
                         ///push back to points vector
-                        points.push_back(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
+                        points.push_back(Vector2f(event.mouseButton.x, event.mouseButton.y));
                         // displays that you have put 3 points and ends clicks
                         text.setString("Algorithm  has began. Generating meow...");
 
                     }
                 }
             }
+
+            //event while loop ends here
         }
 	    
         if (Keyboard::isKeyPressed(Keyboard::Escape))
-	{
-	   window.close();
-	}
+        {
+            window.close();
+        }
+
         /*****************************************
-			  Update
-	*****************************************/
+		        Update
+	    *****************************************/
+
         // generating points/midpoint/speed up points
         if (points.size() > 0)
         {
             ///generate more point(s) to speed up
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 20; i++)
             {
                 ///select random vertex
                 int randomVertexIndex = distribution(generator);
                 ///calculate midpoint between random vertex and the last point in the vector
                 // select random vertex from vertices vector
-                sf::Vector2f randomVertex = vertices[randomVertexIndex];
+                Vector2f randomVertex = vertices[randomVertexIndex];
                 // to calc midpoint
-                sf::Vector2f lastPoint = points.back();
-                sf::Vector2f newPoint = (randomVertex + lastPoint) / 2.0f;
+                Vector2f lastPoint = points.back();
+                Vector2f newPoint = (randomVertex + lastPoint) / 2.0f;
                 ///push back the newly generated coord.
                 points.push_back(newPoint);
             }
@@ -134,26 +156,30 @@ int main()
 	    
         // clear the window to erase what was drawn previously on the screen
         window.clear();
-	// draw background
+
+
+	    // draw background
         window.draw(background);   
+
         /*****************************************
 			  Draw
-	*****************************************/
+	    *****************************************/
+
         // iterates through vertices as triangles
-        for (int i = 0; i < vertices.size(); i++)
+        for (long unsigned int i = 0; i < vertices.size(); i++)
         {
             // create SFML built in class object
-            sf::RectangleShape rect(Vector2f(10, 10));
+            RectangleShape rect(Vector2f(10, 10));
             // set to current vertix in vector
             rect.setPosition(Vector2f(vertices[i].x, vertices[i].y));
             // set color
-            rect.setFillColor(sf::Color::Red);
+            rect.setFillColor(Color::Red);
             // draw it
             window.draw(rect);
         }
 
         // iterates through the points vector as circles
-        for (int i = 0; i < points.size(); i++)
+        for (long unsigned int i = 0; i < points.size(); i++)
         {
             // create SFML built in classs object with radius of 2 pixels
             CircleShape point(2);
@@ -167,6 +193,13 @@ int main()
 
         // Display instructions
         window.draw(text);
-        window.display();    
+        window.display();
+
+        ////////////////////////////////////////////////////////////////////////
+ 
+
+        //Intial window while loop ends here
     }
+
+    return 0;
 }
