@@ -226,7 +226,7 @@ int main()
             // set object to vector of points
             point.setPosition(points[i]);
             // fill to a certain color
-            point.setFillColor(Color::White);
+            point.setFillColor(Color::Blue);
             // use RenderWindow object to display
             window.draw(point);
         }
