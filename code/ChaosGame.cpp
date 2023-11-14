@@ -180,6 +180,7 @@ int main()
                 }
                 else
                 {
+		    // prevent the same index consecutively	
                     int randomVertexIndex = distribution(generator);
                     
                     while (randomVertexIndex == prev)
