@@ -1,5 +1,3 @@
-
-
 /*
 11/14/23
 - Added ability to generate squares and pentagons
@@ -30,7 +28,7 @@ int main()
     // Create and open a window for the game
     RenderWindow window(vm, "Sierpinski CaT-riangle", Style::Default);
    
-    // declares vectors to store corrdinates of the triangle
+    // declares vectors to store cordinates of the triangle
     vector<Vector2f> vertices;
     vector<Vector2f> points;
 
@@ -81,8 +79,6 @@ int main()
 
     //holds # of sides for the fractal
     long unsigned int sides = 0;
-
-
 
     while (window.isOpen())
     {
@@ -146,7 +142,7 @@ int main()
                 }
 
             //event while loop ends here
-        }
+	}
 	    
         if (Keyboard::isKeyPressed(Keyboard::Escape))
         {
@@ -187,7 +183,6 @@ int main()
                     {
                         randomVertexIndex = distribution(generator);
                     }
-
                     // select random vertex from vertices vector
                     Vector2f randomVertex = vertices[randomVertexIndex];
                     // to calc midpoint
@@ -203,8 +198,7 @@ int main()
         // clear the window to erase what was drawn previously on the screen
         window.clear();
 
-
-	    // draw background
+	// draw background
         window.draw(background);   
 
         /*****************************************
