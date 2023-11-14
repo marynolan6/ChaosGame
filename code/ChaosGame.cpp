@@ -1,4 +1,11 @@
-/*11/10/23
+
+
+/*
+11/14/23
+- Added ability to generate squares and pentagons
+- Changed the pixel width and # of iterations
+
+11/10/23
 - Fixed background so the picture sizes properly on all interfaces
 - Deleted some of the "sf::" parts where it was not needed since we are using namespace sf
 - Changed lines 162 and 174 from int i to long long int i to get rid of warnings when using the makefile
@@ -29,7 +36,6 @@ int main()
 
     // Random number generator for vertex selection
     default_random_engine generator;
-    uniform_int_distribution<int> distribution(0, 2);
 
     // Load background texture
     Texture backgroundTexture;
@@ -63,7 +69,7 @@ int main()
     // select the font
     text.setFont(font); // font is a sf::Font
     // set the string to display
-    text.setString("You want to create a triangle? Yes you do. Now click 3 times on the screen:D");
+    text.setString("You want to create a fractal? Yes you do. Enter T for a triangle, S for a square, or P for a pentagon :D");
     // set the character size
     text.setCharacterSize(36); // in pixels, not points!
     // set the color
@@ -72,6 +78,9 @@ int main()
     text.setStyle(Text::Bold);
     // displays actual text
     window.draw(text);
+
+    //holds # of sides for the fractal
+    long unsigned int sides = 0;
 
 
 
@@ -95,33 +104,46 @@ int main()
                 window.close();
             }
 
-            // adding vertices based on mouse click
-            if (event.type == Event::MouseButtonPressed)
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T))
             {
-                // left mouse click
-                if (event.mouseButton.button == sf::Mouse::Left)
+                sides = 3;
+            }
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+            {
+                sides = 4;
+            }
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::P))
+            {
+                sides = 5;
+            }
+
+                // adding vertices based on mouse click
+                if (event.type == Event::MouseButtonPressed)
                 {
-                    cout << "the left button was pressed" << endl;
-                    cout << "mouse x: " << event.mouseButton.x << endl;
-                    cout << "mouse y: " << event.mouseButton.y << endl;
-
-                    // checks number of points clicked
-                    if (vertices.size() < 3)
+                    // left mouse click
+                    if (event.mouseButton.button == sf::Mouse::Left)
                     {
-                        // Assign the coordinates of the mouse click to the vertices vector
-                        vertices.push_back(Vector2f(event.mouseButton.x, event.mouseButton.y));
-                    }
-                    else if (points.size() == 0)
-                    {
-                        ///fourth click
-                        ///push back to points vector
-                        points.push_back(Vector2f(event.mouseButton.x, event.mouseButton.y));
-                        // displays that you have put 3 points and ends clicks
-                        text.setString("Algorithm  has began. Generating meow...");
+                        cout << "the left button was pressed" << endl;
+                        cout << "mouse x: " << event.mouseButton.x << endl;
+                        cout << "mouse y: " << event.mouseButton.y << endl;
 
+                        // checks number of points clicked
+                        if (vertices.size() < sides)
+                        {
+                            // Assign the coordinates of the mouse click to the vertices vector
+                            vertices.push_back(Vector2f(event.mouseButton.x, event.mouseButton.y));
+                        }
+                        else if (points.size() == 0)
+                        {
+                            ///fourth click
+                            ///push back to points vector
+                            points.push_back(Vector2f(event.mouseButton.x, event.mouseButton.y));
+                            // displays that you have put 3 points and ends clicks
+                            text.setString("Algorithm  has began. Generating meow...");
+
+                        }
                     }
                 }
-            }
 
             //event while loop ends here
         }
@@ -138,19 +160,42 @@ int main()
         // generating points/midpoint/speed up points
         if (points.size() > 0)
         {
+            int prev = 0;
+            uniform_int_distribution<int> distribution(0, sides - 1);
             ///generate more point(s) to speed up
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 1000; i++)
             {
-                ///select random vertex
-                int randomVertexIndex = distribution(generator);
-                ///calculate midpoint between random vertex and the last point in the vector
-                // select random vertex from vertices vector
-                Vector2f randomVertex = vertices[randomVertexIndex];
-                // to calc midpoint
-                Vector2f lastPoint = points.back();
-                Vector2f newPoint = (randomVertex + lastPoint) / 2.0f;
-                ///push back the newly generated coord.
-                points.push_back(newPoint);
+                //For triangle:
+                if (sides == 3)///select random vertex
+                {
+                    int randomVertexIndex = distribution(generator);
+                    ///calculate midpoint between random vertex and the last point in the vector
+                    // select random vertex from vertices vector
+                    Vector2f randomVertex = vertices[randomVertexIndex];
+                    // to calc midpoint
+                    Vector2f lastPoint = points.back();
+                    Vector2f newPoint = (randomVertex + lastPoint) / 2.0f;
+                    ///push back the newly generated coord.
+                    points.push_back(newPoint);
+                }
+                else
+                {
+                    int randomVertexIndex = distribution(generator);
+                    
+                    while (randomVertexIndex == prev)
+                    {
+                        randomVertexIndex = distribution(generator);
+                    }
+
+                    // select random vertex from vertices vector
+                    Vector2f randomVertex = vertices[randomVertexIndex];
+                    // to calc midpoint
+                    Vector2f lastPoint = points.back();
+                    Vector2f newPoint = (randomVertex + lastPoint) / 2.0f;
+                    ///push back the newly generated coord.
+                    points.push_back(newPoint);
+                    prev = randomVertexIndex;
+                }
             }
         }
 	    
@@ -182,7 +227,7 @@ int main()
         for (long unsigned int i = 0; i < points.size(); i++)
         {
             // create SFML built in classs object with radius of 2 pixels
-            CircleShape point(2);
+            CircleShape point(.5);
             // set object to vector of points
             point.setPosition(points[i]);
             // fill to a certain color
